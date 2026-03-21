@@ -364,3 +364,18 @@ This happens because the `target/` folder was accidentally pushed to GitHub with
    git push origin main
    ```
 3. Click **Build Now** in Jenkins (Future auto-deploys will work flawlessly!).
+
+---
+
+## Part 9 — Missing Webhooks (200 OK but No Build)
+
+If GitHub shows a **Green Checkmark (200 OK)** under Webhooks, but Jenkins never triggers a new build (or says "Polling has not run yet"), check these two exact causes:
+
+### 1. Webhook URL is missing `/github-webhook/`
+If your GitHub payload URL is just `https://xyz.ngrok.app/`, Jenkins will return a 200 OK for the homepage, but the GitHub plugin will never see the request!
+- **Fix:** Ensure the Payload URL in GitHub ends exactly with `/github-webhook/`.
+- Example: `https://xyz.ngrok-free.app/github-webhook/`
+
+### 2. Jenkins hasn't "registered" the branch yet
+Jenkins Pipeline jobs configured via SCM **ignore all webhooks** until the repository has been checked out manually at least once.
+- **Fix:** Go to your Jenkins job and click **Build Now** manually. Once the first manual build successfully checks out the code, Jenkins will officially "listen" for webhooks on that branch.
