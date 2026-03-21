@@ -21,7 +21,13 @@ pipeline {
                 JENKINS_NODE_COOKIE = 'dontKillMe'
             }
             steps {
-                bat 'start java -jar target\\demo-0.0.1-SNAPSHOT.jar --server.port=9090'
+                bat '''
+                    :: Kill the old process using port 9090 if it exists
+                    FOR /F "tokens=5" %%T IN ('netstat -ano ^| findstr :9090') DO taskkill /F /PID %%T || ver>nul
+                    
+                    :: Start the new application
+                    start java -jar target\\demo-0.0.1-SNAPSHOT.jar --server.port=9090
+                '''
             }
         }
     }
