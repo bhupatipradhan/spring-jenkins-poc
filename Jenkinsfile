@@ -8,7 +8,12 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat 'mvn clean package -DskipTests'
+                bat '''
+                    :: Kill the old process first so Maven can delete the target folder
+                    FOR /F "tokens=5" %%T IN ('netstat -ano ^| findstr :9090') DO taskkill /F /PID %%T || ver>nul
+                    
+                    mvn clean package -DskipTests
+                '''
             }
         }
         stage('Test') {
@@ -22,9 +27,6 @@ pipeline {
             }
             steps {
                 bat '''
-                    :: Kill the old process using port 9090 if it exists
-                    FOR /F "tokens=5" %%T IN ('netstat -ano ^| findstr :9090') DO taskkill /F /PID %%T || ver>nul
-                    
                     :: Start the new application
                     start java -jar target\\demo-0.0.1-SNAPSHOT.jar --server.port=9090
                 '''
