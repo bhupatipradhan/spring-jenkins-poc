@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/<your-username>/springboot-jenkins-poc.git'
+                git branch: 'main', url: 'https://github.com/bhupatipradhan/spring-jenkins-poc.git'
             }
         }
         stage('Build') {
