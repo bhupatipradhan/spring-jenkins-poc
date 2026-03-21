@@ -358,7 +358,7 @@ This happens because the `target/` folder was accidentally pushed to GitHub with
 2. **Properly Ignore and remove the locked folder:** 
    > ⚠️ **Windows Warning:** If you run `echo target/ > .gitignore` in Windows PowerShell, it creates a "UTF-16" text file. **Git cannot read UTF-16 files so it completely ignores it!** You must create the file as standard UTF-8.
    
-   Run these exact commands in PowerShell in your project directory:
+   Run these exact commands in PowerShell in your project directory:   
    ```powershell
    # 1. Create a proper UTF-8 gitignore
    "target/" | Out-File -Encoding utf8 .gitignore
