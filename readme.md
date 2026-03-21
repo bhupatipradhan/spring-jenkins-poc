@@ -273,3 +273,69 @@ git push → GitHub → Webhook → ngrok → Jenkins Pipeline
 | 10–11| Jenkins     | Add Jenkinsfile, create pipeline job|
 | 12–13| Jenkins     | Build, run, access on port 9090     |
 | 14–16| ngrok       | Auto-trigger pipeline on git push   |
+
+
+
+
+## Part 7 — Webhook 403 Troubleshooting
+ 
+If GitHub webhook shows **Response 403**, work through these fixes in order.
+ 
+### Fix 1: CSRF — "No valid crumb" error
+ 
+Jenkins blocks webhook requests due to CSRF protection.
+ 
+**Option A — Enable proxy compatibility (safer):**
+1. Go to **Manage Jenkins → Security → CSRF Protection**
+2. Under **Default Crumb Issuer**, check **Enable proxy compatibility**
+3. Save → Redeliver the webhook from GitHub
+ 
+**Option B — Disable CSRF fully via Script Console:**
+1. Go to **Manage Jenkins → Script Console**
+2. Run:
+ 
+```groovy
+Jenkins.instance.setCrumbIssuer(null)
+Jenkins.instance.save()
+```
+ 
+You should see `Result: null` confirming CSRF is disabled.
+ 
+### Fix 2: Authentication — "Authentication required" error
+ 
+Jenkins requires login to accept webhook calls.
+ 
+**Option A — Via UI:**
+1. **Manage Jenkins → Security → Authorization**
+2. Select **Anyone can do anything** → Save
+ 
+**Option B — Via Script Console:**
+ 
+```groovy
+import jenkins.model.*
+import hudson.security.*
+ 
+def instance = Jenkins.getInstance()
+def strategy = new AuthorizationStrategy.Unsecured()
+instance.setAuthorizationStrategy(strategy)
+instance.save()
+```
+ 
+> ⚠️ Only use "Anyone can do anything" for a local POC. Never in production.
+ 
+### Fix 3: Verify webhook is working
+ 
+Go to GitHub → **Settings → Webhooks** → click your webhook → **Recent Deliveries** → click **Redeliver**.
+ 
+You should see **Response 200** ✅ — the pipeline will now auto-trigger on every push.
+ 
+### Test auto-trigger
+ 
+```bash
+echo "test auto deploy" >> README.md
+git add .
+git commit -m "test auto trigger"
+git push origin main
+```
+ 
+Watch Jenkins — the build should start within seconds automatically.
