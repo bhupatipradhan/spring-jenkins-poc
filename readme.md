@@ -355,12 +355,20 @@ This happens because the `target/` folder was accidentally pushed to GitHub with
    ```cmd
    FOR /F "tokens=5" %T IN ('netstat -ano ^| findstr :9090') DO taskkill /F /PID %T
    ```
-2. **Ignore and remove the locked folder:** Run these commands in your project directory:
-   ```bash
-   echo target/ > .gitignore
+2. **Properly Ignore and remove the locked folder:** 
+   > ⚠️ **Windows Warning:** If you run `echo target/ > .gitignore` in Windows PowerShell, it creates a "UTF-16" text file. **Git cannot read UTF-16 files so it completely ignores it!** You must create the file as standard UTF-8.
+   
+   Run these exact commands in PowerShell in your project directory:
+   ```powershell
+   # 1. Create a proper UTF-8 gitignore
+   "target/" | Out-File -Encoding utf8 .gitignore
+   
+   # 2. Tell git to forget the target folder
    git rm -r --cached target
+   
+   # 3. Commit and push
    git add .
-   git commit -m "Remove target folder and fix gitignore"
+   git commit -m "Remove target folder and fix gitignore encoding"
    git push origin main
    ```
 3. Click **Build Now** in Jenkins (Future auto-deploys will work flawlessly!).
