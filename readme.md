@@ -343,7 +343,7 @@ Watch Jenkins — the build should start within seconds automatically.
 ---
 
 ## Part 8 — Checkout Failed "unable to unlink" Error
- 
+   
 If the Jenkins pipeline fails at the **Checkout SCM** stage with the error:
 `error: unable to unlink old 'target/demo-0.0.1-SNAPSHOT.jar': Invalid argument`
  
