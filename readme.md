@@ -143,7 +143,12 @@ pipeline {
         stage('Build') {
             when { branch 'main' }
             steps {
-                bat 'mvn clean package -DskipTests'
+                bat '''
+                    :: Kill old process so Maven can clean the target folder without lock errors
+                    FOR /F "tokens=5" %%T IN ('netstat -ano ^| findstr :9090') DO taskkill /F /PID %%T || ver>nul
+                    
+                    mvn clean package -DskipTests
+                '''
             }
         }
         stage('Test') {
@@ -154,6 +159,9 @@ pipeline {
         }
         stage('Deploy') {
             when { branch 'main' }
+            environment {
+                JENKINS_NODE_COOKIE = 'dontKillMe'
+            }
             steps {
                 bat 'start java -jar target\\demo-0.0.1-SNAPSHOT.jar --server.port=9090'
             }
