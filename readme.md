@@ -339,3 +339,28 @@ git push origin main
 ```
  
 Watch Jenkins — the build should start within seconds automatically.
+ 
+---
+
+## Part 8 — Checkout Failed "unable to unlink" Error
+ 
+If the Jenkins pipeline fails at the **Checkout SCM** stage with the error:
+`error: unable to unlink old 'target/demo-0.0.1-SNAPSHOT.jar': Invalid argument`
+ 
+This happens because the `target/` folder was accidentally pushed to GitHub without a `.gitignore`, and the old JAR file is currently **locked by Windows** because it's still running in the background.
+ 
+### How to fix:
+ 
+1. **Kill the locked process:** Open Command Prompt as **Administrator** (crucial step!) and run:
+   ```cmd
+   FOR /F "tokens=5" %T IN ('netstat -ano ^| findstr :9090') DO taskkill /F /PID %T
+   ```
+2. **Ignore and remove the locked folder:** Run these commands in your project directory:
+   ```bash
+   echo target/ > .gitignore
+   git rm -r --cached target
+   git add .
+   git commit -m "Remove target folder and fix gitignore"
+   git push origin main
+   ```
+3. Click **Build Now** in Jenkins (Future auto-deploys will work flawlessly!).
