@@ -254,7 +254,7 @@ Now every `git push` to `main` will automatically trigger the pipeline.
 | GitHub webhook can't reach Jenkins | Jenkins is on localhost | Use ngrok to expose Jenkins publicly |
 
 ---
-
+ 
 ## Summary
 
 ```
