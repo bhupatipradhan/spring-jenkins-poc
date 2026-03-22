@@ -377,7 +377,7 @@ This happens because the `target/` folder was accidentally pushed to GitHub with
    # 3. Commit and push
    git add .
    git commit -m "Remove target folder and fix gitignore encoding"
-   git push origin main
+   git push origin main  
    ```
 3. Click **Build Now** in Jenkins (Future auto-deploys will work flawlessly!).
 
